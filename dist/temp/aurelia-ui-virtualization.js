@@ -249,22 +249,20 @@ var ArrayVirtualRepeatStrategy = exports.ArrayVirtualRepeatStrategy = function (
 
     var maybePromise = this._runSplices(repeat, array.slice(0), splices);
     if (maybePromise instanceof Promise) {
-      (function () {
-        var queuedSplices = repeat.__queuedSplices = [];
+      var queuedSplices = repeat.__queuedSplices = [];
 
-        var runQueuedSplices = function runQueuedSplices() {
-          if (!queuedSplices.length) {
-            delete repeat.__queuedSplices;
-            delete repeat.__array;
-            return;
-          }
+      var runQueuedSplices = function runQueuedSplices() {
+        if (!queuedSplices.length) {
+          delete repeat.__queuedSplices;
+          delete repeat.__array;
+          return;
+        }
 
-          var nextPromise = _this2._runSplices(repeat, repeat.__array, queuedSplices) || Promise.resolve();
-          nextPromise.then(runQueuedSplices);
-        };
+        var nextPromise = _this2._runSplices(repeat, repeat.__array, queuedSplices) || Promise.resolve();
+        nextPromise.then(runQueuedSplices);
+      };
 
-        maybePromise.then(runQueuedSplices);
-      })();
+      maybePromise.then(runQueuedSplices);
     }
   };
 
@@ -846,6 +844,7 @@ var VirtualRepeat = exports.VirtualRepeat = (_dec4 = (0, _aureliaTemplating.cust
     this._first = this._first < 0 ? 0 : this._first;
     if (this._first > this.items.length - this.elementsInView) {
       this._first = this.items.length - this.elementsInView;
+      this._first = this._first < 0 ? 0 : this._first;
     }
     this._checkScrolling();
 
